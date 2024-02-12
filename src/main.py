@@ -1,19 +1,20 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
 from matplotlib.colors import ListedColormap
+from src.cube_environment import CubeEnvironment, Axis
 
-from src.cube import Cube, Axis
-
-cube = Cube(3)
-cube.turn_slice(Axis.Y,1)
-cube.turn_slice(Axis.X,1)
-cube.turn_slice(Axis.Z,1)
+cube = CubeEnvironment(3)
+print(cube.get_reward())
+cube.turn_slice(Axis.X, 2)
+cube.turn_slice(Axis.X, 2)
+cube.turn_slice(Axis.X, 2)
+cube.turn_slice(Axis.X, 1)
+print(cube.get_reward())
 
 
 
 # List of cube faces
-matrices = cube.render()
+matrices = cube.get_faces()
 
 # Define the custom colors
 colors = ['white', 'blue', 'red', 'orange', 'green', 'yellow']

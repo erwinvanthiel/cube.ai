@@ -4,15 +4,21 @@ class Environment:
 
     def __init__(self):
         self.agents = []
-        self. iteration = 0
+        self.iteration = 0
         self.state = None
+
     def add_agent(self, agent):
         self.agents.append(agent)
+        agent.state = self.state
 
     def next(self):
         for agent in self.agents:
-            agent.move(self.state)
+            agent.act(self)
         self.iteration += 1
+
+    def perform_action(self, action):
+        raise NotImplementedError()
+
 
 
 
