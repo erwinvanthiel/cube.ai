@@ -1,6 +1,6 @@
 import random
 
-from src.environment import Environment
+from environment import Environment
 import numpy as np
 import math
 # This class represents the Rubik's Cube environment.

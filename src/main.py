@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import ListedColormap
-from src.cube_environment import CubeEnvironment, Axis
+from cube_environment import CubeEnvironment, Axis
 
 cube = CubeEnvironment(3)
 print(cube.get_reward())
