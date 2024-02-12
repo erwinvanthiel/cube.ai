@@ -1,7 +1,7 @@
 from torch.distributions import Categorical
 
-from src.agent import Agent
-from src.models import Actor, Critic
+from agent import Agent
+from models import Actor, Critic
 import torch
 import numpy as np
 import random

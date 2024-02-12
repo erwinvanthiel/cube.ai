@@ -1,5 +1,5 @@
-from src.cube_environment import CubeEnvironment
-from src.ppo_agent import PpoAgent
+from cube_environment import CubeEnvironment
+from ppo_agent import PpoAgent
 
 
 env = CubeEnvironment(3)
