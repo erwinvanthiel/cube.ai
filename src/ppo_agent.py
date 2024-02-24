@@ -1,13 +1,14 @@
 from torch.distributions import Categorical
-
 from agent import Agent
 from models import Actor, Critic
 import torch
 import numpy as np
 import random
+from plot import plot
+
 class PpoAgent(Agent):
 
-    def __init__(self, state_dim, num_actions, n_epochs=4, memory_size=20, batch_size=5, policy_clip=0.2, gamma=0.99, gae_lambda=0.95, alpha=0.0005):
+    def __init__(self, state_dim, num_actions, n_epochs=4, memory_size=16, batch_size=8, policy_clip=0.2, gamma=0.99, gae_lambda=0.95, alpha=0.000005, debug=False):
         super(PpoAgent, self).__init__()
         self.train = True
         self.action_probabilties = np.empty(memory_size)
@@ -24,37 +25,52 @@ class PpoAgent(Agent):
         self.n_epochs = n_epochs
         self.gamma = gamma
         self.gae_lambda = gae_lambda
-        self.max_reward = 0
+        self.total_reward = 0
+        self.debug = debug
 
     def act(self, env):
+        # Check whether memory is full and perform update if so
+        if self.iteration == self.memory_size:
+            if self.debug:
+                print("---------- episode ----------")
+            self.learn()
+            self.iteration = 0
+            self.add_reward(self.total_reward)
+            self.total_reward = 0
+
+        if self.debug:
+            print(env.get_state())
+
+        self.states[self.iteration] = env.get_state()
         # the policy output, aka a probability distribution
-        self.states[self.iteration] = env.state
-        pi = Categorical(self.actor(torch.tensor(env.state).float()))
+        probs = self.actor(torch.tensor(env.get_state()).float().cuda())
+        pi = Categorical(probs) 
+        
+        if self.debug:
+            print(probs)
 
         # the state value approximation, i.e. the Q-value approximation.
-        self.values[self.iteration] = self.critic(torch.tensor(env.state).float())
+        self.values[self.iteration] = self.critic(torch.tensor(env.get_state()).float().cuda())
 
         # the sampled action
         a = pi.sample()
+
+        if self.debug:
+            print(a.item())
+
+        # a = torch.tensor([random.Random().randint(0, 11)]).cuda() # FOR DEBUGGING
         self.actions_taken[self.iteration] = a
 
         # the probability of the sampled action
         self.action_probabilties[self.iteration] = pi.log_prob(a)
 
         # perform the action
-        reward, self.dones[self.iteration] = env.perform_action(a)
+        reward, self.dones[self.iteration] = env.perform_action(a.item())
         self.rewards[self.iteration] = reward
-        if reward > self.max_reward:
-            self.max_reward = reward
-
-        # Check whether memory is full and perform update if so
-        if self.iteration == self.memory_size - 1:
-            self.learn()
-            self.iteration = 0
-            self.add_reward(self.max_reward)
-            self.max_reward = 0
+        self.total_reward += reward
 
         self.iteration += 1
+
 
     # Implementation based on
     # https://github.com/philtabor/Youtube-Code-Repository/blob/master/ReinforcementLearning/PolicyGradient/PPO/torch/ppo_torch.py
