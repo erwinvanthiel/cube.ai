@@ -4,7 +4,7 @@ import numpy as np
 from collections import deque
 class Agent:
 
-	def __init__(self, queue_length=100):
+	def __init__(self, queue_length=1000):
 		self.reward_history = deque()
 		self.queue_length = queue_length
 		self.iteration = 0
@@ -20,6 +20,9 @@ class Agent:
 
 	def act(self, env):
 		raise NotImplementedError()
+
+
+
 
 
 

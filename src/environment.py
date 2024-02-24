@@ -5,11 +5,9 @@ class Environment:
     def __init__(self):
         self.agents = []
         self.iteration = 0
-        self.state = None
 
     def add_agent(self, agent):
         self.agents.append(agent)
-        agent.state = self.state
 
     def next(self):
         for agent in self.agents:
@@ -17,6 +15,9 @@ class Environment:
         self.iteration += 1
 
     def perform_action(self, action):
+        raise NotImplementedError()
+
+    def get_state(self):
         raise NotImplementedError()
 
 

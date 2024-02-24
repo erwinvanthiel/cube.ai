@@ -6,14 +6,14 @@ from torch.optim import Adam
 
 
 class Actor(nn.Module):
-    def __init__(self, alpha, state_dim, action_dim, hidden_size=256):
+    def __init__(self, alpha, state_dim, action_dim, hidden_size=576):
         super(Actor, self).__init__()
         self.actor = nn.Sequential(
-            nn.Linear(state_dim, 256),
+            nn.Linear(state_dim, hidden_size),
             nn.ReLU(),
-            nn.Linear(256, 256),
+            nn.Linear(hidden_size, hidden_size),
             nn.ReLU(),
-            nn.Linear(256, action_dim),
+            nn.Linear(hidden_size, action_dim),
             nn.Softmax(dim=-1)
         )
 
@@ -26,7 +26,7 @@ class Actor(nn.Module):
 
 
 class Critic(nn.Module):
-    def __init__(self, alpha, state_dim, hidden_size=256):
+    def __init__(self, alpha, state_dim, hidden_size=288):
         super(Critic, self).__init__()
         self.fc1 = nn.Linear(state_dim, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
