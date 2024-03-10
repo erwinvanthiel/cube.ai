@@ -8,7 +8,7 @@ from plot import plot
 
 class PpoAgent(Agent):
 
-    def __init__(self, state_dim, num_actions, n_epochs=4, memory_size=16, batch_size=8, policy_clip=0.2, gamma=0.99, gae_lambda=0.95, alpha=0.000005, debug=False):
+    def __init__(self, state_dim, num_actions, n_epochs=4, memory_size=8, batch_size=4, policy_clip=0.2, gamma=0.99, gae_lambda=0.95, alpha=0.000005, debug=False):
         super(PpoAgent, self).__init__()
         self.train = True
         self.action_probabilties = np.empty(memory_size)
@@ -72,7 +72,7 @@ class PpoAgent(Agent):
         self.iteration += 1
 
 
-    # Implementation based on
+    # Implementation based on (read stolen from)
     # https://github.com/philtabor/Youtube-Code-Repository/blob/master/ReinforcementLearning/PolicyGradient/PPO/torch/ppo_torch.py
     def learn(self):
         for _ in range(self.n_epochs):

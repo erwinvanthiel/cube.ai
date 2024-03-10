@@ -1,8 +1,8 @@
 import random
-
 from environment import Environment
 import numpy as np
 import math
+
 # This class represents the Rubik's Cube environment.
 class CubeEnvironment(Environment):
     def __init__(self, size, k):
@@ -13,6 +13,7 @@ class CubeEnvironment(Environment):
 
     # This method represents the action of turning a slice of the cube.
     # It returns the reward and an indication of whether the terminal state has been reached
+    # NOTE: for pocket cubes, i.e. 2x2 cube we always rotate slice 0.
     def turn_slice(self, axis, index, clock_wise=True):
 
         match axis:
@@ -71,9 +72,11 @@ class CubeEnvironment(Environment):
             self.random_scramble()
         return reward, done
 
+    # perform k random moves on a cube from the solved state
     def random_scramble(self):
         self.faces = self.initialize_clean_cube()
-        for i in range(random.Random().randint(1, self.k)):
+        # for i in range(random.Random().randint(1, self.k)):
+        for i in range(self.k):
             self.perform_action(random.Random().randint(0, (3 * self.size * 2) - 1))
 
     # action_slice depicts what slice gets turned, e.g. 2 is axis 0 a.k.a X and then the third (index = 2) slice.
@@ -84,11 +87,13 @@ class CubeEnvironment(Environment):
         action_slice = math.floor(action / 2)
         return self.turn_slice(math.floor(action_slice / self.size), action_slice % self.size, clock_wise=clock_wise)
 
+    # returns the state of the cube in a vector
     def get_state(self):
         face_vector = np.concatenate([face.ravel() for face in self.faces])
         one_hot_encoding = np.eye(6)[face_vector]
         return one_hot_encoding.flatten()
 
+    # Reward based on human domain knowledge, aka cheating
     def get_reward_per_layer(self):
         top_complete = (self.faces[Orientation.TOP][self.faces[Orientation.TOP] == Orientation.TOP] + 1).sum() == self.size ** 2
         bottom_complete = (self.faces[Orientation.BOTTOM][self.faces[Orientation.BOTTOM] == Orientation.BOTTOM] / 5).sum() == self.size ** 2

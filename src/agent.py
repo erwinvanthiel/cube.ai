@@ -8,6 +8,7 @@ class Agent:
 		self.reward_history = deque()
 		self.queue_length = queue_length
 		self.iteration = 0
+		
 	def add_reward(self, reward):
 		self.reward_history.append(reward)
 		if len(self.reward_history) > self.queue_length:
