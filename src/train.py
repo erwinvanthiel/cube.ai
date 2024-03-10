@@ -3,7 +3,7 @@ from ppo_agent import PpoAgent
 
 
 env = CubeEnvironment(2, 1)
-agent = PpoAgent(env.get_state().shape[0], 12)
+agent = PpoAgent(env.get_state().shape[0], 6)
 # agent.actor.load("../model_params/k=4/actor.pth")
 # agent.critic.load("../model_params/k=4/critic.pth")
 env.add_agent(agent)

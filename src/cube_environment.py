@@ -13,7 +13,6 @@ class CubeEnvironment(Environment):
 
     # This method represents the action of turning a slice of the cube.
     # It returns the reward and an indication of whether the terminal state has been reached
-    # NOTE: for pocket cubes, i.e. 2x2 cube we always rotate slice 0.
     def turn_slice(self, axis, index, clock_wise=True):
 
         match axis:
@@ -77,15 +76,20 @@ class CubeEnvironment(Environment):
         self.faces = self.initialize_clean_cube()
         # for i in range(random.Random().randint(1, self.k)):
         for i in range(self.k):
-            self.perform_action(random.Random().randint(0, (3 * self.size * 2) - 1))
+            # self.perform_action(random.Random().randint(0, (3 * self.size * 2) - 1))
+            self.perform_action(random.Random().randint(0, 5))
 
     # action_slice depicts what slice gets turned, e.g. 2 is axis 0 a.k.a X and then the third (index = 2) slice.
     # If we put in action=4 we action_slice will be 2, so we will turn the third slice around the x-dimension.
     # aciton=5 will do the same but then counter-clockwise because 5 % 2 = 1
+    # def perform_action(self, action):
+    #     clock_wise = action % 2 == 0
+    #     action_slice = math.floor(action / 2)
+    #     return self.turn_slice(math.floor(action_slice / self.size), action_slice % self.size, clock_wise=clock_wise)
+
     def perform_action(self, action):
         clock_wise = action % 2 == 0
-        action_slice = math.floor(action / 2)
-        return self.turn_slice(math.floor(action_slice / self.size), action_slice % self.size, clock_wise=clock_wise)
+        return self.turn_slice(math.floor(action / self.size), 0, clock_wise=clock_wise)
 
     # returns the state of the cube in a vector
     def get_state(self):
