@@ -6,23 +6,23 @@ from torch.optim import Adam
 
 
 class Actor(nn.Module):
-    def __init__(self, alpha, state_dim, action_dim, hidden_size=512):
+    def __init__(self, alpha, state_dim, action_dim):
         super(Actor, self).__init__()
-        self.actor = nn.Sequential(
-            nn.Linear(state_dim, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, action_dim),
-            nn.Softmax(dim=-1)
-        )
+        self.fc1 = nn.Linear(state_dim, 512)
+        self.ln1 = nn.LayerNorm(512)
+        self.fc2 = nn.Linear(512, 256)
+        self.ln2 = nn.LayerNorm(256)
+        self.fc3 = nn.Linear(256, action_dim)
 
         self.optimizer = Adam(self.parameters(), lr=alpha)
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
 
-    def forward(self, state):
-        return self.actor(state)
+    def forward(self, x):
+        x = F.relu(self.ln1(self.fc1(x)))
+        x = F.relu(self.ln2(self.fc2(x)))
+        x = self.fc3(x)
+        return F.softmax(x, dim=-1)
 
     def save(self, episode):
         torch.save(self.state_dict(), '../model_params/actor-episode-{0}.pth'.format(episode))
@@ -32,21 +32,24 @@ class Actor(nn.Module):
 
 
 class Critic(nn.Module):
-    def __init__(self, alpha, state_dim, hidden_size=256):
+    def __init__(self, alpha, state_dim):
         super(Critic, self).__init__()
-        self.fc1 = nn.Linear(state_dim, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, 1)
+        super(Critic, self).__init__()
+        self.fc1 = nn.Linear(state_dim, 512)
+        self.ln1 = nn.LayerNorm(512)
+        self.fc2 = nn.Linear(512, 256)
+        self.ln2 = nn.LayerNorm(256)
+        self.fc3 = nn.Linear(256, 1)
 
         self.optimizer = Adam(self.parameters(), lr=alpha)
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
 
-    def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        value = self.fc3(x)
-        return value
+    def forward(self, x):
+        x = F.relu(self.ln1(self.fc1(x)))
+        x = F.relu(self.ln2(self.fc2(x)))
+        x = self.fc3(x)
+        return x
 
     def save(self, episode):
         torch.save(self.state_dict(), '../model_params/critic-episode-{0}.pth'.format(episode))
